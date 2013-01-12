@@ -2,10 +2,15 @@
 %html
   %head
     %title Necromancer
+    = stylesheet_link_tag "http://fonts.googleapis.com/css?family=Sanchez"
     = stylesheet_link_tag    "application", :media => "all"
     = javascript_include_tag "application"
     = csrf_meta_tags
   %body
-    .notice= notice
-    .alert= alert
+  = render :partial => 'nav'
+  #page-wrapper
+    - if notice
+      %p{ :class => "notice"}= notice
+    - if alert
+      %p{ :class => "notice error"}= alert
     = yield

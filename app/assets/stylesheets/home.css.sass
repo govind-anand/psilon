@@ -1,0 +1,80 @@
+@import 'compass'
+@import 'compass/reset'
+*
+  font-family: 'Sanchez', serif !important
+  font-weight: 400
+.hidden
+  display: none
+.rfloat
+  float: right
+.lfloat
+  float: left
+.tfloat
+  top: 0
+  position: absolute
+.bfloat
+  bottom: 0
+  position: absolute
+.clickable
+  cursor: pointer
+
+body
+  position: absolute
+  top: 0
+  left: 0
+  bottom: 0
+  right: 0
+
+#page-wrapper
+  position: absolute
+  top: 50px
+  left: 0
+  bottom: 0
+  right: 0
+
+  h1
+    font-size: 30px
+    font-weight: 800
+    display: block
+    margin-bottom: 10px
+  h2
+    font-size: 20px
+    font-weight: 600
+    display: block
+    margin-bottom: 10px
+  .banner
+    margin: 20px
+    h1, h2
+      display: block
+      text-align: center
+    h1
+      font-size: 50px
+      line-height: 80px
+      margin-bottom: 5px
+    h2
+      font-size: 15px
+#main-nav
+  height: 50px
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  +background-image(linear-gradient(top, #356AA0 0%, #274E75 100%))
+  +single-box-shadow
+
+  li
+    display: block
+    float: left
+    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAnCAYAAAAl15mhAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAFZJREFUGNONkDsOwDAIQx+UfC7RsWvvf7t0qaWgRGqZrGcQYFCNMey87nDAgPDXOERKEj6TmgQSDrRkJdJF6kLanrgIs/U19XdXvpDlr9RT9rGYEgOIB3ZYBNM8D6W1AAAAAElFTkSuQmCC") no-repeat scroll right bottom transparent
+    margin: 0
+    padding: 0
+  a, a:visited
+    display: block
+    padding: 10px
+    line-height: 30px
+    text-decoration: none
+    font-weight: 700
+    color: #A0C3E5
+    font-size: 1em
+    text-decoration: none
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2)
