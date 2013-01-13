@@ -44,6 +44,13 @@ Authority.configure do |config|
   #   :delete => 'deletable'
   # }
 
+  config.abilities = {
+    :create => 'creatable',
+    :read => 'readable',
+    :edit => 'editable',
+    :administer => 'administrable'
+  }
+
   # SECURITY_VIOLATION_HANDLER
   # ==========================
   # If a SecurityViolation is raised, what controller method should be used to rescue it?
