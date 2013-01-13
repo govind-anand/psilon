@@ -1,6 +1,11 @@
-%ul
-  - for project in @projects
-    %li= project.name
-
-
-    
+#project-list-wrapper
+  #plist-item-wrapper
+    - if @projects.length == 0
+      .vacancy-msg No projects Found
+    - else
+      %ul
+        - for project in @projects
+          %li= project.name
+  .axn-wrapper
+    %a.axn-trigger{'data-user-action' => 'project-new'}
+      New Project

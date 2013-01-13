@@ -1,1 +1,2 @@
-window.necro = {}
+window.necro =
+  imagePath: '/assets/dhtmlx/imgs/'

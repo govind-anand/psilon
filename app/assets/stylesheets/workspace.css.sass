@@ -1,7 +1,51 @@
 //= require dhtmlx/dhtmlx
 //= require dhtmlx/light_theme/dhtmlx_custom
 //= require dhtmlx/types/ftypes
+//= require toastmessage/resources/css/jquery.toastmessage
+
+@import 'compass'
+@import 'compass/reset'
 
 body, html
   height: 100%
   width: 100%
+*
+  font-family: verdana
+  font-size: 11px
+
+.vacancy-msg
+  background-color: #FFFCD0
+  border: 1px solid #E5D6B1
+  +border-radius(5px)
+  padding: 10px
+  color: #E5D6B1
+.loader
+  background: white
+  padding: 10px
+  min-height: 50px
+  background: url('/assets/loader.gif') no-repeat center center
+
+header.main
+  +background-image(linear-gradient(top, #356AA0 0%, #274E75 100%))
+  height: 100%
+  h1
+    height: 100%
+    line-height: 30px
+    font-weight: 900
+    font-size: 20px
+    padding-left: 15px
+    color: antiquewhite
+
+#project-list-wrapper
+  *
+    font-size: 13px
+  #plist-item-wrapper
+    padding: 5px
+  .axn-wrapper
+    border-top: 1px solid #C6D7E9
+    padding-top: 5px
+  a.axn-trigger
+    padding: 5px
+    color: #2B5682
+    cursor: pointer
+    font-weight: 800

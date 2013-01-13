@@ -6,10 +6,14 @@ class necro.Workspace
   constructor: ->
     @views = {}
   init: ->
-    @layout = new dhtmlXLayoutObject document.body, '2U'
+    @layout = new dhtmlXLayoutObject document.body, '3T'
     @layout.attachStatusBar()
-    @sbarPanel = @layout.cells('a')
-    @bodyPanel = @layout.cells('b')
+    @headerPanel = @layout.cells('a')
+    @headerPanel.hideHeader()
+    @headerPanel.setHeight(30)
+    @headerPanel.attachHTMLString("<header class='main'><h1>Necromancer</h1></header>")
+    @sbarPanel = @layout.cells('b')
+    @bodyPanel = @layout.cells('c')
 
     @views.sidebar = new necro.Sidebar(@sbarPanel)
     @views.sidebar.init()
