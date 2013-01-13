@@ -3,6 +3,6 @@
   %head
     %title Necromancer | Workspace
     = stylesheet_link_tag    "workspace", :media => "all"
-    = javascript_include_tag "workspace"
     = csrf_meta_tags
-  %body{:onload => "new necro.Workspace().init()"}
+    %script{ 'data-main' => "/assets/necro", 'src'=> '/assets/require'}
+  %body
