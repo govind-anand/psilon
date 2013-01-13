@@ -19,4 +19,19 @@ class User < ActiveRecord::Base
     end
   end
 
+  has_many :created_projects,
+  :foreign_key => 'creator_id',
+  :class_name => 'Project'
+
+  has_many :permissions
+
+  has_many :projects,
+  :through => :permissions,
+  :source => :entity,
+  :source_type => "Project"
+
+  def get_home_path
+    Rails.root.join 'workspace', Digest::MD5.hexdigest(self.email)
+  end
+
 end

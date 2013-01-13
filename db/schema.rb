@@ -11,7 +11,27 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130112215005) do
+ActiveRecord::Schema.define(:version => 20130113064309) do
+
+  create_table "permissions", :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "entity_id"
+    t.integer  "entity_class"
+    t.integer  "can_read"
+    t.integer  "can_edit"
+    t.integer  "can_view"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  create_table "projects", :force => true do |t|
+    t.string   "name"
+    t.integer  "creator_id"
+    t.string   "root"
+    t.boolean  "is_public"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "users", :force => true do |t|
     t.string   "email",                  :default => "", :null => false

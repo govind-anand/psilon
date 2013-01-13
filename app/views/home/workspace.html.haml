@@ -5,5 +5,4 @@
     = stylesheet_link_tag    "workspace", :media => "all"
     = javascript_include_tag "workspace"
     = csrf_meta_tags
-  %body
-    Hello world
+  %body{:onload => "new necro.Workspace().init()"}

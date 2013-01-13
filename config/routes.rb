@@ -3,6 +3,11 @@ Necromancer::Application.routes.draw do
 
   root :to => 'home#index'
   match 'workspace' => 'home#workspace'
+  resources :projects
+
+  resources :users do
+    resources :projects
+  end
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
