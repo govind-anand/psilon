@@ -16,12 +16,12 @@ ActiveRecord::Schema.define(:version => 20130113064309) do
   create_table "permissions", :force => true do |t|
     t.integer  "user_id"
     t.integer  "entity_id"
-    t.integer  "entity_type"
+    t.string   "entity_type"
     t.integer  "can_read"
     t.integer  "can_edit"
-    t.integer  "can_view"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.integer  "can_administer"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "projects", :force => true do |t|

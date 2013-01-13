@@ -15,7 +15,7 @@ development:
   database: necromancer_development
   pool: 5
   username: root
-  password:
+  password: I_Love_MySQL
   socket: /var/lib/mysql/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
@@ -28,7 +28,7 @@ test:
   database: necromancer_test
   pool: 5
   username: root
-  password:
+  password: I_Love_MySQL
   socket: /var/lib/mysql/mysql.sock
 
 production:
@@ -38,5 +38,5 @@ production:
   database: necromancer_production
   pool: 5
   username: root
-  password:
+  password: I_Love_MySQL
   socket: /var/lib/mysql/mysql.sock

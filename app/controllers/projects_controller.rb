@@ -20,4 +20,13 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def create
+    project = Project.new params[:project]
+    project.creator = current_user
+    if project.save
+      render :json => { :success => true }
+    else
+      render :json => { :success => false, :errors => project.errors }
+    end
+  end
 end

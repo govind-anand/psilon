@@ -5,7 +5,12 @@
 class necro.Workspace
   constructor: ->
     @views = {}
-  init: ->
+  _initAjax: ->
+    $.ajaxSetup
+      beforeSend: (xhr)->
+        csrfToken = $('meta[name="csrf-token"]').attr('content')
+        xhr.setRequestHeader('X-CSRF-Token', csrfToken)
+  _initUI: ->
     @layout = new dhtmlXLayoutObject document.body, '3T'
     @layout.attachStatusBar()
     @headerPanel = @layout.cells('a')
@@ -20,3 +25,7 @@ class necro.Workspace
 
     @views.appBody = new necro.AppBody(@bodyPanel)
     @views.appBody.init()
+
+  init: ->
+    @_initAjax()
+    @_initUI()

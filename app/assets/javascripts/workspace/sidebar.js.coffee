@@ -34,7 +34,14 @@ class necro.Sidebar
                 type: 'input',
                 name: 'project[name]',
                 label: 'Name of project',
-                validate: 'NotEmpty'
+                validate: 'NotEmpty',
+                position: 'label-top'
+              },
+              {
+                type: 'checkbox',
+                name: 'project[is_public]',
+                label: 'Make public',
+                position: 'label-right'
               },
               { type: 'button', name: 'create', value: 'Create'},
               { type: 'button', name: 'cancel', value: 'Cancel'}
@@ -79,17 +86,20 @@ class necro.Sidebar
     amplify.subscribe 'user-action:project-new-cancel', this, ->
       @switchToView('projectList')
     amplify.subscribe 'user-action:project-create', this, (data)->
+      @panel.attachHTMLString "<div class='loader'></div>"
       $.ajax
         url: '/projects',
         type: 'POST',
+        data: data
         dataType: 'json',
-        success: (data)->
+        success: (data)=>
           if data.success
             notifier.success "Successfully created project"
-        error: ->
+            @switchToView 'projectList'
+        error: =>
           # [TODO] Add some sane error message
           notifier.error "Creation failed."
-
+          @switchToView 'projectCreator'
     $(@panel).on 'click', '.axn-trigger', ->
       action = $(this).attr('data-user-action')
       amplify.publish "user-action:#{action}"
