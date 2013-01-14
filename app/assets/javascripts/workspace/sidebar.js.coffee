@@ -23,7 +23,7 @@ define [
           'projectTree': new ProjectTree { parent: this }
 
       switchToView: (view)->
-        if @views[view]?
+        if @views[view]? and @views[view] isnt @currentView
           @currentView?.hide()
           @currentView = @views[view].show()
 
