@@ -5,8 +5,6 @@ require.config
   baseUrl: '/assets'
   paths:
     'toastmessage': 'toastmessage/javascript/jquery.toastmessage'
-    'codemirror': 'codemirror/lib/codemirror'
-    'cm-theme': 'codemirror/theme'
   shim:
     'amplify':
       deps: ['jquery']
@@ -49,12 +47,12 @@ require [
         @ui =
           workspace: new Workspace
           notifier: new Notifier
-          logger:
-            debug: efn
-            info: efn
-            warn: efn
-            error: efn
-            log: efn
+        @logger=
+          debug: efn
+          info: efn
+          warn: efn
+          error: efn
+          log: efn
         @ui.workspace.init()
         @ui.notifier.init()
 
@@ -63,22 +61,28 @@ require [
         @_initAjax()
         @_initUI()
         if (enableLogging)
-          require ['workspace/logger'], (Logger)=> @ui.logger = new Logger
+          require ['workspace/logger'], (Logger)=> @logger = new Logger
 
       publish: ->
-        @ui.logger.info "PUBLISH: ", arguments if @ui?
+        @logger.info "PUBLISH: ", arguments if @ui?
         amplify.publish.apply this, arguments
 
       subscribe: ->
-        @ui.logger.info "SUBSCRIBE: ", arguments if @ui?
+        @logger.info "SUBSCRIBE: ", arguments if @ui?
         amplify.subscribe.apply this, arguments
 
       loadCSS: (path)->
         unless (@_loadedCSS ?= {})[path]?
-          $('head').append("<link rel='stylesheet' type='text/css' href=#{path}>")
+          $('head').append("<link rel='stylesheet' type='text/css' href='/assets/#{path}.css'>")
 
       frags:
         loader: "<div class='loader'></div>"
         loadFail: "<div class='load-fail'>Loading Failed!</div>"
+
+      _nextId: 1
+      uniqueId: ->
+        id = @_nextId
+        @_nextId += 1
+        return id
 
     $ -> necro.init(true)

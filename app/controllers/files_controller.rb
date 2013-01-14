@@ -2,6 +2,37 @@ class FilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_project
 
+  def get_mode(name)
+    # [TODO] Store it in a database
+    ext_mode_map = {
+      'cpp'    => ['clike'],
+      'c'      => ['clike'],
+      'c++'    => ['clike'],
+      'coffee' => ['coffeescript'],
+      'css'    => ['css'],
+      'diff'   => ['diff'],
+      'haxe'   => ['haxe'],
+      'js'     => ['javascript'],
+      'less'   => ['less'],
+      'lua'    => ['lua'],
+      'md'     => ['markdown'],
+      'sql'    => ['mysql'],
+      'php'    => ['php'],
+      'py'     => ['python'],
+      'rb'     => ['ruby'],
+      'rst'    => ['rst'],
+      'sh'     => ['shell'],
+      'yaml'   => ['yaml'],
+      'html'   => ['css','javascript','xml','htmlmixed']
+    }
+    ext = name.split('.')[-1]
+    if ext_mode_map.has_key? ext
+      ext_mode_map[ext]
+    else
+      'text'
+    end
+  end
+
   def show
     unless params.has_key? :path
       json_error "Path not specified"
@@ -11,7 +42,8 @@ class FilesController < ApplicationController
     render :json => {
       :name => file.name,
       :parent => file.parent,
-      :content => file.content
+      :content => file.content,
+      :modes => self.get_mode(file.name)
     }
   end
 
