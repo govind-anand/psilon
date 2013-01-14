@@ -6,6 +6,7 @@ Necromancer::Application.routes.draw do
 
   resources :projects do
     resources :files
+    resource :file
   end
 
   resources :users do

@@ -2,10 +2,22 @@ class FilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_project
 
+  def show
+    unless params.has_key? :path
+      json_error "Path not specified"
+      return false
+    end
+    file = @project.find_file params[:path]
+    render :json => {
+      :name => file.name,
+      :parent => file.parent,
+      :content => file.content
+    }
+  end
+
   def index
     respond_to do |format|
       format.xml do
-        puts "---->", params
         if params.has_key? 'id'
           @id = params[:id]
           render 'subtree'
@@ -33,5 +45,6 @@ class FilesController < ApplicationController
       return false
     end
   end
+
   true
 end

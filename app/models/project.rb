@@ -58,4 +58,7 @@ class Project < ActiveRecord::Base
     end
   end
 
+  def find_file(path)
+    FileProxy.new :path => path, :project => self
+  end
 end

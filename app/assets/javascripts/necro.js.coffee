@@ -5,6 +5,8 @@ require.config
   baseUrl: '/assets'
   paths:
     'toastmessage': 'toastmessage/javascript/jquery.toastmessage'
+    'codemirror': 'codemirror/lib/codemirror'
+    'cm-theme': 'codemirror/theme'
   shim:
     'amplify':
       deps: ['jquery']
@@ -70,5 +72,13 @@ require [
       subscribe: ->
         @ui.logger.info "SUBSCRIBE: ", arguments if @ui?
         amplify.subscribe.apply this, arguments
+
+      loadCSS: (path)->
+        unless (@_loadedCSS ?= {})[path]?
+          $('head').append("<link rel='stylesheet' type='text/css' href=#{path}>")
+
+      frags:
+        loader: "<div class='loader'></div>"
+        loadFail: "<div class='load-fail'>Loading Failed!</div>"
 
     $ -> necro.init(true)
