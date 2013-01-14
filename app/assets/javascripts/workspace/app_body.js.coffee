@@ -7,4 +7,6 @@ define ->
       @tabbar.addTab("intro", "Introduction")
       @tabbar.setTabActive("intro")
       @tabbar.setContentHTML("intro", "Lorem ipsum dolor sit amet")
+
+      necro.subscribe 'user-action:file-open', -> console.log("received message")
       this
