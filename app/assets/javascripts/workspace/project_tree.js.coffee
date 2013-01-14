@@ -8,6 +8,8 @@ define ['./subview'], (Subview)->
       tree.setImagePath necro.imagePath
       url = "/projects/#{@parent.currentPid}/files.xml"
       tree.setXMLAutoLoading(url)
+      tree.enableDragAndDrop(true, true)
+      tree.enableItemEditor(true)
       tree.loadXML(url)
 
       tree.attachEvent 'onDblClick', (id)=>
