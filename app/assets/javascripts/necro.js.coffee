@@ -65,7 +65,7 @@ require [
 
       publish: ->
         @ui.logger.info "PUBLISH: ", arguments if @ui?
-        amplify.subscribe.apply this, arguments
+        amplify.publish.apply this, arguments
 
       subscribe: ->
         @ui.logger.info "SUBSCRIBE: ", arguments if @ui?

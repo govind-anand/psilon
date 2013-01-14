@@ -24,9 +24,9 @@ class ProjectsController < ApplicationController
     project = Project.new params[:project]
     project.creator = current_user
     if project.save
-      render :json => { :success => true }
+      json_success
     else
-      render :json => { :success => false, :errors => project.errors }
+      json_error project.errors
     end
   end
 end

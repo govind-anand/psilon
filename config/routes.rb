@@ -3,7 +3,10 @@ Necromancer::Application.routes.draw do
 
   root :to => 'home#index'
   match 'workspace' => 'home#workspace'
-  resources :projects
+
+  resources :projects do
+    resources :files
+  end
 
   resources :users do
     resources :projects

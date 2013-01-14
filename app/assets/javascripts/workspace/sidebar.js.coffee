@@ -70,6 +70,15 @@ define ->
             # forgo leave panel, title etc. because obviously
             # the next view to be shown will set their values
             this
+        'projectTree':
+          show: ->
+            self.panel.setText "Project"
+            tree = self.panel.attachTree()
+            tree.setImagePath necro.imagePath
+            url = "/projects/#{self.currentPid}/files.xml"
+            tree.setXMLAutoLoading(url)
+            tree.loadXML(url)
+          hide: -> this
     switchToView: (view)->
       if @views[view]?
         @currentView?.hide()
@@ -98,6 +107,10 @@ define ->
             # [TODO] Add some sane error message
             necro.ui.notifier.error "Creation failed."
             @switchToView 'projectCreator'
+      necro.subscribe 'user-action:project-open', this, (data)->
+        @currentPid = data.pid
+        @switchToView 'projectTree'
+
       $(@panel).on 'click', '.axn-trigger', ->
         action = $(this).attr('data-user-action')
         necro.publish "user-action:#{action}"

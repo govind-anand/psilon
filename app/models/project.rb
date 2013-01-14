@@ -37,4 +37,25 @@ class Project < ActiveRecord::Base
     # [TODO] Handle EACCES : Permission denied
     FileUtils.mkpath project.root
   end
+
+  # Param : root - directory path relative to project root
+  def files(root = '/')
+    begin
+      dir_path = File.join self.root, root
+      entries = []
+      Dir.entries(dir_path).each do |entry|
+        unless entry == '.' or entry == '..'
+          entry_path = File.join root, entry
+          entries.push FileProxy.new({
+            :path => entry_path,
+            :project => self
+          })
+        end
+      end
+      return entries
+    rescue SystemCallError
+      return []
+    end
+  end
+
 end
