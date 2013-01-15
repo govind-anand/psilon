@@ -42,7 +42,7 @@ class FilesController < ApplicationController
     render :json => {
       :name => file.name,
       :parent => file.parent,
-      :content => file.content,
+      :content => file.get_content,
       :modes => self.get_mode(file.name)
     }
   end
@@ -61,6 +61,19 @@ class FilesController < ApplicationController
         json_success :files => @project.files
       end
     end
+  end
+
+  def update
+    file = @project.find_file(params[:path])
+    unless file.exists
+      json_error :file => "Not found"
+    end
+    if params.has_key? :content
+      unless file.set_content(params[:content])
+        json_error :file => "could not be saved"
+      end
+    end
+    json_success
   end
 
   private

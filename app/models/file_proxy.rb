@@ -37,7 +37,7 @@ class FileProxy
     @path.split('/')[0...-1].join('/')
   end
 
-  def content
+  def get_content
     if @exists
       begin
         File.open self.abs_path, 'r' do |f|
@@ -56,7 +56,7 @@ class FileProxy
     end
   end
 
-  def content=(data)
+  def set_content(data)
     begin
       File.open self.abs_path, 'w' do |f|
         f.flock File::LOCK_EX

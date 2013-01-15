@@ -4,7 +4,7 @@ define ->
 
     constructor: (@panel)->
       @_menuConfig =
-        codeOnlyEntries: ['save', 'save_as','undo', 'redo']
+        codeOnlyEntries: ['saveFile', 'saveFileAs','undo', 'redo']
         contentOnlyEntries: []
 
     _getTabId: (options)->
@@ -47,17 +47,36 @@ define ->
           })
 
     configureMenuForCode: ->
-      for entry in @_menuConfig.codeOnlyEntries
-        @menu.setItemEnabled(entry)
-      for entry in @_menuConfig.contentOnlyEntries
-        @menu.setItemDisabled(entry)
+      if @menuLoaded
+        for entry in @_menuConfig.codeOnlyEntries
+          @menu.setItemEnabled(entry)
+        for entry in @_menuConfig.contentOnlyEntries
+          @menu.setItemDisabled(entry)
 
     configureMenuForContent: ->
-      for entry in @_menuConfig.contentOnlyEntries
-        @menu.setItemEnabled(entry)
-      for entry in @_menuConfig.codeOnlyEntries
-        @menu.setItemDisabled(entry)
+      if @menuLoaded
+        for entry in @_menuConfig.contentOnlyEntries
+          @menu.setItemEnabled(entry)
+        for entry in @_menuConfig.codeOnlyEntries
+          @menu.setItemDisabled(entry)
 
+    newFile: ->
+    openFile: ->
+    saveFile: ->
+      tabId = @tabbar.getActiveTab()
+      tabInfo = @_getTabInfo tabId
+      $.ajax
+        type: 'PUT'
+        url: "/projects/#{tabInfo.pid}/file"
+        data:
+          path: tabInfo.path
+          content: @tabs[tabId].editor.getValue()
+    saveFileAs: ->
+    closeActiveTab: ->
+    undo: ->
+    redo: ->
+    showManual: ->
+    showAbout: ->
     _setupMenu: ->
       @menu = @panel.attachMenu()
       @menu.setIconsPath '/assets/icons/'
@@ -67,6 +86,7 @@ define ->
         if @_getTabInfo(activeTab).type == 'file'
           @configureMenuForCode()
         else @configureMenuForContent()
+      @menu.attachEvent 'onClick', (id)=> this[id]()
 
     init: ->
       @_setupMenu()
@@ -75,7 +95,7 @@ define ->
       @tabs = {}
 
       necro.subscribe 'user-action:url-open', (data)=>
-        @configureMenuForContent() if @menuLoaded
+        @configureMenuForContent()
         tabId = "content:#{data.url}"
         tabName = data.title
         unless @tabs[tabId]?
@@ -107,7 +127,7 @@ define ->
               path: data.path
             type: 'GET'
             success: (data)=>
-              @configureMenuForCode() if @menuLoaded
+              @configureMenuForCode()
               necro.loadCSS 'codemirror/lib/codemirror'
               necro.loadCSS 'codemirror/theme/solarized'
               necro.loadCSS 'codemirror'
