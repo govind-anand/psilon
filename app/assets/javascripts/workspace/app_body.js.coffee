@@ -71,6 +71,8 @@ define ->
         data:
           path: tabInfo.path
           content: @tabs[tabId].editor.getValue()
+          success: =>
+            @tabs[tabId].editor.markClean()
     saveFileAs: ->
     closeActiveTab: ->
     undo: ->
@@ -88,11 +90,24 @@ define ->
         else @configureMenuForContent()
       @menu.attachEvent 'onClick', (id)=> this[id]()
 
-    init: ->
-      @_setupMenu()
+    _setupTabs: ->
       @tabbar = @panel.attachTabbar()
+      @tabbar.enableTabCloseButton true
       @tabbar.setImagePath necro.imagePath
       @tabs = {}
+      @tabbar.attachEvent 'onTabClose', (id)=>
+        if @_getTabInfo(id).type == 'file' and not @tabs[id].editor.isClean()
+          return false unless confirm(
+            """
+            Closing the tab will result in loss of unsaved work. 
+            Do you want to proceed?
+            """
+          )
+        delete @tabs[id]
+
+    init: ->
+      @_setupMenu()
+      @_setupTabs()
 
       necro.subscribe 'user-action:url-open', (data)=>
         @configureMenuForContent()
