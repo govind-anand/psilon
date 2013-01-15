@@ -1,6 +1,28 @@
 define ->
+
   class AppBody
+
     constructor: (@panel)->
+      @_menuConfig =
+        codeOnlyEntries: ['save', 'save_as','undo', 'redo']
+        contentOnlyEntries: []
+
+    _getTabId: (options)->
+      switch options.type or 'content'
+        when 'content' then "content:#{options.url}"
+        when 'file' then "file:#{options.pid}:#{options.path}"
+          
+    _getTabInfo: (tabId)->
+      arr = tabId.split(':')
+      switch(arr[0])
+        when 'content' 
+          type: 'content'
+          url: arr[1]
+        when 'file'
+          type: 'file'
+          pid: arr[1]
+          path: arr[2]
+
     _createEditor: (tabId, data)->
       reqments = []
       for mode in data.modes
@@ -24,20 +46,60 @@ define ->
             theme: 'solarized dark'
           })
 
+    configureMenuForCode: ->
+      for entry in @_menuConfig.codeOnlyEntries
+        @menu.setItemEnabled(entry)
+      for entry in @_menuConfig.contentOnlyEntries
+        @menu.setItemDisabled(entry)
+
+    configureMenuForContent: ->
+      for entry in @_menuConfig.contentOnlyEntries
+        @menu.setItemEnabled(entry)
+      for entry in @_menuConfig.codeOnlyEntries
+        @menu.setItemDisabled(entry)
+
+    _setupMenu: ->
+      @menu = @panel.attachMenu()
+      @menu.setIconsPath '/assets/icons/'
+      @menu.loadXML '/assets/menu.xml', =>
+        @menuLoaded = true
+        activeTab = @tabbar.getActiveTab()
+        if @_getTabInfo(activeTab).type == 'file'
+          @configureMenuForCode()
+        else @configureMenuForContent()
+
     init: ->
+      @_setupMenu()
       @tabbar = @panel.attachTabbar()
-      @tabbar.setImagePath(necro.imagePath)
-      @tabs = {"content:intro": {state: 'static'}}
-      @tabbar.addTab("content:intro", "Introduction")
-      @tabbar.setTabActive("content:intro")
-      @tabbar.setContentHTML("content:intro", "Lorem ipsum dolor sit amet")
+      @tabbar.setImagePath necro.imagePath
+      @tabs = {}
+
+      necro.subscribe 'user-action:url-open', (data)=>
+        @configureMenuForContent() if @menuLoaded
+        tabId = "content:#{data.url}"
+        tabName = data.title
+        unless @tabs[tabId]?
+          @tabs[tabId] = {state: 'loading'}
+          @tabbar.addTab tabId, tabName
+          @tabbar.setContentHTML tabId, necro.frags.loader
+          $.ajax
+            url: data.url
+            data:
+              path: data.path
+            type: 'GET'
+            success: (data)=>
+              @tabs[tabId] = {state: 'loaded'}
+              @tabbar.setContentHTML tabId, data
+            error: =>
+              @tabs[tabId] = {state: 'failed'}
+              @tabbar.setContentHTML tabId, necro.frags.loadFail
+        @tabbar.setTabActive(tabId)
 
       necro.subscribe 'user-action:file-open', (data)=>
-        console.log data
         tabId = "file:#{data.pid}:#{data.path}"
         tabName = data.path.split('/').slice(-1)[0]
         unless @tabs[tabId]?
-          @tabbar.addTab(tabId,tabName)
+          @tabbar.addTab tabId, tabName
           @tabbar.setContentHTML tabId, necro.frags.loader
           $.ajax
             url: "/projects/#{data.pid}/file"
@@ -45,11 +107,18 @@ define ->
               path: data.path
             type: 'GET'
             success: (data)=>
-              necro.loadCSS('codemirror/lib/codemirror')
-              necro.loadCSS('codemirror/theme/solarized')
-              necro.loadCSS('codemirror')
-              require ['codemirror/lib/codemirror'], => @_createEditor(tabId, data)
+              @configureMenuForCode() if @menuLoaded
+              necro.loadCSS 'codemirror/lib/codemirror'
+              necro.loadCSS 'codemirror/theme/solarized'
+              necro.loadCSS 'codemirror'
+              require ['codemirror/lib/codemirror'], =>
+                @_createEditor(tabId, data)
             error: =>
               @tabbar.setContentHTML tabId, necro.frags.loadFail
         @tabbar.setTabActive(tabId)
+
+      necro.publish 'user-action:url-open', {
+        url: '/assets/introduction.html',
+        title: 'Introduction'
+      }
       this
