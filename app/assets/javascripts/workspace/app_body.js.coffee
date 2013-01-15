@@ -76,7 +76,9 @@ define ->
     saveFileAs: ->
     closeActiveTab: ->
     undo: ->
+      @tabs[@tabbar.getActiveTab()].editor.undo()
     redo: ->
+      @tabs[@tabbar.getActiveTab()].editor.redo()
     showManual: ->
     showAbout: ->
     _setupMenu: ->
