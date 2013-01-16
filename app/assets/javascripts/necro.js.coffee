@@ -16,25 +16,30 @@ require.config
 require [
     'jquery'
     'amplify'
-    'routie'
+    'path'
     'dhtmlx/dhtmlx'
     'dhtmlx/types/ftypes'
     'workspace/workspace'
     'workspace/notifier'
+    'workspace/routes'
   ], ->
 
     # [TODO] Add notes on why CommonJS style is preferred
     Workspace = require('workspace/workspace')
     Notifier = require('workspace/notifier')
+    routes = require('workspace/routes')
 
     window.necro =
       imagePath: '/assets/dhtmlx/imgs/'
 
-      _initRouteMapper: ->
-        routie 'project/:pid', (pid)->
-          necro.publish 'user-action:project-open', pid: pid
-        routie 'project/:pid/file/:fid', (pid, fid)->
-          necro.publish 'user-action:file-open', pid: pid, fid: fid
+      _initRouter: ->
+        self = this
+        for route, action of routes
+          Path.map(route).to ((action)-> ->
+            self.publish action, @params
+          )(action)
+        Path.root('#/')
+        Path.listen()
 
       _initAjax: ->
         $.ajaxSetup
@@ -57,9 +62,9 @@ require [
         @ui.notifier.init()
 
       init: (enableLogging)->
-        @_initRouteMapper()
         @_initAjax()
         @_initUI()
+        @_initRouter()
         if (enableLogging)
           require ['workspace/logger'], (Logger)=> @logger = new Logger
 

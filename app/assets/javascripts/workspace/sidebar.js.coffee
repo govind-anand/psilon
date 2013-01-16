@@ -29,8 +29,6 @@ define [
 
       init: ->
         @panel.setWidth(250)
-        @switchToView('projectList')
-
         necro.subscribe 'user-action:project-new', this, ->
           @switchToView('projectCreator')
         necro.subscribe 'user-action:project-new-cancel', this, ->
@@ -50,9 +48,11 @@ define [
               # [TODO] Add some sane error message
               necro.ui.notifier.error "Creation failed."
               @switchToView 'projectCreator'
-        necro.subscribe 'user-action:project-open', this, (data)->
+        necro.subscribe 'nav:project-root', this, (data)->
           @currentPid = data.pid
           @switchToView 'projectTree'
+        necro.subscribe 'nav:app-root', this, ->
+          @switchToView 'projectList'
 
         $(@panel).on 'click', '.axn-trigger', ->
           action = $(this).attr('data-user-action')

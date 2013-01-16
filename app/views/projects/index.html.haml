@@ -6,7 +6,7 @@
       %ul
         - for project in @projects
           %li
-            %a{ :href => "#project/#{project.id}"}=project.name
+            %a{ :href => "#/project/#{project.id}"}=project.name
   .axn-wrapper
     %a.axn-trigger{'data-user-action' => 'project-new'}
       New Project
