@@ -6,7 +6,6 @@ define ->
       @_menuConfig =
         codeOnlyEntries: ['saveFile', 'saveFileAs','undo', 'redo']
         contentOnlyEntries: []
-
     _getTabId: (options)->
       switch options.type or 'content'
         when 'content' then "content:#{options.url}"
