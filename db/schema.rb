@@ -11,7 +11,12 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130113064309) do
+ActiveRecord::Schema.define(:version => 20130113135931) do
+
+  create_table "file_entries", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "permissions", :force => true do |t|
     t.integer  "user_id"

@@ -1,4 +1,11 @@
 #project-list-wrapper
+  .pseudo-tbar
+    %a.icon &#57349;
+    %a.icon &#8862;
+    %a.icon &#128228;
+    %a.icon2 &#62208;
+    %a.icon2 &#62256;
+    %a.icon &#128229;
   #plist-item-wrapper
     - if @projects.length == 0
       .vacancy-msg No projects Found
@@ -6,7 +13,6 @@
       %ul
         - for project in @projects
           %li
-            %a{ :href => "#/project/#{project.id}"}=project.name
-  .axn-wrapper
-    %a.axn-trigger{'data-user-action' => 'project-new'}
-      New Project
+            %a{ :href => "#/project/#{project.id}"}
+              .icon.lfloat &#10002;
+              = project.name

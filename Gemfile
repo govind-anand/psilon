@@ -40,4 +40,3 @@ gem 'websocket-rack'
 gem 'diff_match_patch_native'
 gem 'debugger'
 gem 'authority'
-

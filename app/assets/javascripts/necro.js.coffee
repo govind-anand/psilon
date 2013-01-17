@@ -8,8 +8,6 @@ require.config
   shim:
     'amplify':
       deps: ['jquery']
-    'dhtmlx/types/ftypes':
-      deps: ['dhtmlx/dhtmlx']
     'toastmessage':
       deps: ['jquery']
 
@@ -17,8 +15,6 @@ require [
     'jquery'
     'amplify'
     'path'
-    'dhtmlx/dhtmlx'
-    'dhtmlx/types/ftypes'
     'workspace/workspace'
     'workspace/notifier'
     'workspace/routes'
@@ -30,7 +26,6 @@ require [
     routes = require('workspace/routes')
 
     window.necro =
-      imagePath: '/assets/dhtmlx/imgs/'
 
       _initRouter: ->
         self = this
@@ -48,20 +43,23 @@ require [
             xhr.setRequestHeader('X-CSRF-Token', csrfToken)
 
       _initUI: ->
-        efn = ->
         @ui =
           workspace: new Workspace
           notifier: new Notifier
+        @ui.workspace.init()
+        @ui.notifier.init()
+
+      _initLogger: ->
+        efn = ->
         @logger=
           debug: efn
           info: efn
           warn: efn
           error: efn
           log: efn
-        @ui.workspace.init()
-        @ui.notifier.init()
 
       init: (enableLogging)->
+        @_initLogger()
         @_initAjax()
         @_initUI()
         @_initRouter()

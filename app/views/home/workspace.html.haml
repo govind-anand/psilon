@@ -2,7 +2,46 @@
 %html
   %head
     %title Necromancer | Workspace
-    = stylesheet_link_tag    "workspace", :media => "all"
+    = stylesheet_link_tag 'workspace', :media => 'all'
     = csrf_meta_tags
-    %script{ 'data-main' => "/assets/necro", 'src'=> '/assets/require'}
-  %body
+    %script{ 'data-main' => '/assets/necro', 'src'=> '/assets/require'}
+  %body.light-theme
+    %header
+      %ul#account-options
+        %li{'data-option' => 'account_settings'} Account Settings
+        %li{'data-option' => 'logout'} Logout
+
+      %ul#ui-options
+        %li.selected{'data-option' => 'light'} Light
+        %li{'data-option' => 'dark'} Dark
+      %h1 Necromancer
+    #sidebar
+      .titlebar.tbar
+        .title-placeholder
+      .body
+        #project-tree-wrapper
+        #project-list-wrapper
+          .pseudo-tbar
+            %a.icon &#57349;
+            %a.icon &#8862;
+            %a.icon &#128228;
+            %a.icon2 &#62208;
+            %a.icon2 &#62256;
+            %a.icon &#128229;
+          #plist-item-wrapper
+      .bottombar.tbar
+        %a#sbar-collapse.icon &#9198;
+        %a#sbar-search-settings.icon &#9881;
+        #sbar-search-wrapper
+          %input
+          %a.search.icon &#128269;
+          %a.tbox-clear.icon &#9003;
+    #status.tbar
+    #workspace-container
+      #tabbar.tbar
+        %a#tab-all.icon &#9776;
+        %a#tabbar-scroll-left.icon &#59229;
+        %ul#tab-list
+        %a#tabbar-scroll-right.icon &#59230;
+      #body-outer-wrapper
+        #body-wrapper

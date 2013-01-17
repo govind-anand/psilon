@@ -16,7 +16,7 @@ define [
 
     class Sidebar
 
-      constructor: (@panel)->
+      constructor: (@el)->
         @views =
           'projectCreator': new ProjectCreator { parent: this }
           'projectList': new ProjectList { parent: this }
@@ -27,14 +27,22 @@ define [
           @currentView?.hide()
           @currentView = @views[view].show()
 
+      setTitle: (title)->
+        @titlePlaceholder.html title
+
       init: ->
-        @panel.setWidth(250)
+
+        @body = @el.find('.body')
+        @titlebar = @el.find('.titlebar')
+        @titlePlaceholder = @titlebar.find('.title-placeholder')
+        @bottombar = @el.find('.bottombar')
+
         necro.subscribe 'user-action:project-new', this, ->
           @switchToView('projectCreator')
         necro.subscribe 'user-action:project-new-cancel', this, ->
           @switchToView('projectList')
         necro.subscribe 'user-action:project-create', this, (data)->
-          @panel.attachHTMLString "<div class='loader'></div>"
+          @body.html "<div class='loader'></div>"
           $.ajax
             url: '/projects',
             type: 'POST',

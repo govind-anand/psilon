@@ -1,14 +1,14 @@
 define ['./subview'], (Subview)->
 
   class ProjectList extends Subview
-    constructor: -> super
+    constructor: -> 
+      super
     show: ->
-      @parent.panel.setText 'Projects'
-      @parent.panel.attachHTMLString "<div class='loader'></div>"
+      @parent.setTitle 'Projects'
       $.ajax
         url: '/users/current/projects.html'
         success: (data)=>
-          @parent.panel.attachHTMLString data
+          @parent.body.html data
         error: =>
-          @parent.panel.attachHTMLString "Failed to load content."
+          @parent.body.html "Failed to load content."
       this
