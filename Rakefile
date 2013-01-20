@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Necromancer::Application.load_tasks
+Psilon::Application.load_tasks

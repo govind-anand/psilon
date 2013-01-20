@@ -1,4 +1,4 @@
-Necromancer::Application.routes.draw do
+Psilon::Application.routes.draw do
   devise_for :users
 
   root :to => 'home#index'
