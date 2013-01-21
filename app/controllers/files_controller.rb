@@ -48,17 +48,15 @@ class FilesController < ApplicationController
   end
 
   def index
+    root = params[:root] || '/'
     respond_to do |format|
-      format.xml do
-        if params.has_key? 'id'
-          @id = params[:id]
-          render 'subtree'
-        else
-          render 'index'
-        end
-      end
       format.json do
-        json_success :files => @project.files
+        json_success({
+          :id => @project.id,
+          :name => @project.name,
+          :root => root,
+          :files => @project.files(root)
+        })
       end
     end
   end

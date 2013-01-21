@@ -2,14 +2,14 @@ define [
     'space-pen'
     './sidebar'
     './header'
-    #'./body'
-    #'./status'
+    './body'
+    './status'
   ],(
     View,
     Sidebar,
     Header
-    #Body,
-    #Status
+    Body,
+    Status
   )->
 
     class Workspace extends View
@@ -18,13 +18,13 @@ define [
         @div id:'app-wrapper', =>
           @subview 'sidebar', new Sidebar
           @subview 'header', new Header
-          @div id: 'status', outlet: 'statusEl'
-          @div id: 'workspace-container', outlet: 'bodyEl'
+          @subview 'body', new Body
+          @subview 'status', new Status
 
       init: -> 
         @appendTo @el
         # [TODO][low] Show some loading mask
-        @sidebar.init()
-        @header.init()
-        #@body = new Body(@bodyEl).init()
+        # @sidebar.init()
+        # @header.init()
+        # @body = new Body(@bodyEl).init()
         this

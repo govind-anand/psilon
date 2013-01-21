@@ -127,29 +127,30 @@ header
       .icon
         border: none
 
-  .body
-    top: $tbar-h
-    bottom: $tbar-h
+#sidebar > .body
+  top: $tbar-h
+  bottom: $tbar-h
+  position: absolute
+  left: 0
+  right: 0
+#project-list
+  ul
+    li
+      min-height: $tbar-ico-size
+      line-height: $tbar-ico-size
+      padding-top: 5px
+      padding-bottom: 5px
+      a
+        font-weight: 100
+  .axn-wrapper
+    border-top: 1px solid
+    border-color: inherit
     position: absolute
     left: 0
     right: 0
-    ul
-      li
-        min-height: $tbar-ico-size
-        line-height: $tbar-ico-size
-        padding-top: 5px
-        padding-bottom: 5px
-        a
-          font-weight: 100
-    .axn-wrapper
-      border-top: 1px solid
-      border-color: inherit
-      position: absolute
-      left: 0
-      right: 0
-      bottom: 0
-      .btn
-        margin: 5px
+    bottom: 0
+    .btn
+      margin: 5px
 #status
   position: absolute
   left: 0
@@ -164,6 +165,8 @@ header
   left: $sidebar-w + 1px + 2*$pad
   right: $pad
   border: 1px solid
+#workspace-container.rexpanded
+  left: $pad
 #tabbar
   position: absolute
   top: 0
@@ -215,5 +218,9 @@ header
   left: 0 !important
   right: 0 !important
   bottom: 0 !important
+
+form > table
+  tr td
+    padding: 10px
 
 @import ./light-theme

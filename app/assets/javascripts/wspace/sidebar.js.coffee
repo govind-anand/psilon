@@ -1,7 +1,13 @@
 define [
     'space-pen'
+    './project_list'
+    './project_tree'
+    './sidebar_searchbar'
   ],(
-    View
+    View,
+    ProjectList,
+    ProjectTree,
+    SidebarSearchbar
   )->
 
     class Sidebar extends View
@@ -9,16 +15,42 @@ define [
       @content: ->
         @div id:'sidebar', =>
           @div class:'titlebar tbar', =>
-            @div class: 'title-placeholder'
-          @div class: 'body', outlet: 'body', =>
-          @div class:'bottombar tbar', =>
-            @a id:'sbar-collapse',class: 'icon', => 
-              @raw '&#9198;'
-            @a id:'search-settings', class: 'icon', => 
-              @raw '&#9881;'
-            @div id:'sbar-search-wrapper', =>
-              @input
-              @a class:'search icon', =>
-                @raw '&#128269;'
-              @a class:'tbox-clear icon', =>
-                @raw '&#9003;'
+            @div class: 'title-placeholder', outlet: 'title'
+          @div class: 'body', outlet: 'body'
+          @subview 'sidebarSearchbar', new SidebarSearchbar
+
+      initialize: ->
+        @views = {}
+        psi.subscribe 'nav:app-root', =>
+          require ["wspace/project_list"], (V)=>
+            unless @views['project_list']?
+              v = @views['project_list'] = new V
+              v.appendTo @body
+              v.parentView = this
+            @switchToView 'project_list'
+            @currentView.loadProjects()
+
+        psi.subscribe 'nav:project-root', (data)=>
+          require ["wspace/project_tree"], (V)=>
+            viewName = "project_tree:#{data.pid}"
+            unless @views[viewName]?
+              v = @views[viewName] = new V(data.pid)
+              v.appendTo @body
+              v.parentView = this
+            @switchToView viewName
+
+      collapse: ->
+        @hide 'fast', -> 
+          psi.publish 'ui:sidebar-collapsed'
+        this
+
+      setTitle: (title)-> 
+        @title.html(title)
+        this
+
+      switchToView: (view)->
+        if @views[view] isnt @currentView
+          @currentView?.hide?()
+          @currentView = @views[view].show?()
+          @title.html @currentView.title
+        this
