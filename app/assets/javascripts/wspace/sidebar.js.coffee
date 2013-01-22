@@ -30,14 +30,9 @@ define [
             @switchToView 'project_list'
             @currentView.loadProjects()
 
-        psi.subscribe 'nav:project-root', (data)=>
-          require ["wspace/project_tree"], (V)=>
-            viewName = "project_tree:#{data.pid}"
-            unless @views[viewName]?
-              v = @views[viewName] = new V(data.pid)
-              v.appendTo @body
-              v.parentView = this
-            @switchToView viewName
+        psi.subscribe 'nav:project-root', this, @openProjectTree
+        psi.subscribe 'nav:file', this, @openProjectTree
+
 
       collapse: ->
         @hide 'fast', -> 
@@ -47,6 +42,15 @@ define [
       setTitle: (title)-> 
         @title.html(title)
         this
+
+      openProjectTree: (data)->
+        require ["wspace/project_tree"], (V)=>
+          viewName = "project_tree:#{data.pid}"
+          unless @views[viewName]?
+            v = @views[viewName] = new V(data.pid)
+            v.appendTo @body
+            v.parentView = this
+          @switchToView viewName
 
       switchToView: (view)->
         if @views[view] isnt @currentView

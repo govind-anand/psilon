@@ -25,6 +25,20 @@ body.light-theme
   header
     background: $blue-base
     +background-image(linear-gradient(top, $blue-base 0%, #3E6489 100%))
+    h1
+      a, a:hover
+        color: white
+      border-color: #559ADE
+    .sf-menu > li> a
+      color: #F9FAFC
+    .sf-menu > li ul
+      +box-shadow(0 0 2px 2px #559ADE)
+      background: white
+      li
+        padding: 5px
+        background: white
+      li:hover
+        background: #F9FAFC
   #status
     background: #D2D4D8
     +box-shadow(inset 0 0 3px 3px $shadow-col)
