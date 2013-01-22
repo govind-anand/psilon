@@ -19,6 +19,12 @@ define [
             theme: 'psilon'
             icons: true
             dots: false
+          contextmenu:
+            items:
+              doSomething:
+                label: 'Do something'
+                icon: false
+                action: ->
           json_data:
             ajax:
               url: "/projects/#{pid}/files.json"
@@ -34,7 +40,7 @@ define [
                     data:
                       title: item.path.split('/').slice(-1)[0]
                       attr:
-                        href: "#/project/#{pid}/#{item.type}/#{item.path.replace(/\//, '*')}"
+                        href: "#/project/#{pid}/#{item.type}/#{item.path.replace(/\//g, '*')}"
                   if item.type == 'file' 
                     child.data.icon = '/assets/icons/page.png'
                   else
@@ -48,7 +54,8 @@ define [
                   children: children
                 else
                   children
-          plugins: ["themes","json_data"]
+          plugins: ["themes","json_data","contextmenu"]
+        $.vakata.context.cnt.appendTo($("body")).html(" ")
 
       show: ->
         @loadTree() unless @treeLoaded
