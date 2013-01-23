@@ -10,6 +10,7 @@ define [
 
       collapseSidebar: ->
         @addClass 'rexpanded'
+        psi.publish 'post:ui:sidebar:collapse'
 
       createEditor: (eId, params)->
         psi.loadCSS 'codemirror/lib/codemirror'
@@ -22,7 +23,7 @@ define [
           @editors[eId].cm = CodeMirror body.html('').get(0), {
             lineNumbers: true
           }
-        @tabbar.addEditorTab eId, params.path
+        @tabbar.addEditorTab eId, params.path, params.pid
 
       openEditor: (params)->
         eId = "file:#{params.pid}:#{params.path}"
@@ -33,10 +34,17 @@ define [
         @editors[eId].body
           .show()
 
+      closeEditor: (eId)->
+        @editors[eId].body.remove()
+        @tabbar.removeTab(eId)
+        arr = eId.split(':')
+        psi.publish 'post:file:close', pid: arr[1], path: arr[2]
+
       initialize: ->
         @editors = {}
-        psi.subscribe 'ui:sidebar-collapsed', this, @collapseSidebar
-        psi.subscribe 'nav:file', this, @openEditor
+        psi.subscribe 'pre:ui:sidebar:collapse', this, @collapseSidebar
+        psi.subscribe 'pre:file:close', this, @closeEditor
+        psi.subscribe 'post:nav:file', this, @openEditor
 
       @content: ->
         @div id:'workspace-container', =>

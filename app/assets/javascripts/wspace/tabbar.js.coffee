@@ -16,21 +16,50 @@ define [
           @a id:'tabbar-scroll-right', class: 'icon', =>
             @raw '&#59230;'
 
-      initialize: ->
-        @tabs = {}
+      getTabConfig: (tabId)->
+        type = tabId.split(':')[0]
+        if (type == 'file')
+          @parentView.editors[tabId]
+        else 
+          @parentView.content[tabId]
 
-      addEditorTab: (tabId, path)->
+      initialize: ->
         self = this
-        path = path.replace(/\*/g, '/')
-        tab = $$ ->
-          @div class: 'tab', path
+        @tabs = {}
+        @on 'click', '.tab .tab-close', ->
+          psi.publish 'pre:file:close', $(this).parent('.tab').data('tabId')
+
+      addEditorTab: (tabId, path, pid)->
+        self = this
+        realpath = path.replace(/\*/g, '/')
+        @tabs[tabId] = tab = $$ ->
+          @div class: 'tab', =>
+            @a class: 'rfloat icon tab-close', => @raw '&#10060;'
+            @a class: 'tab-label', href:"#/project/#{pid}/file/#{path}", realpath
         tab.data('tabId', tabId)
 
         @tabs[tabId] = tab
         @tabList.append tab
-        tab.click -> self.switchToTab $(this).data('tabId')
+        this
+
+      removeTab: (tabId)->
+        @tabs[tabId].remove()
+        delete @tabs[tabId]
+        if @activeTab == tabId
+          for key, value of @tabs
+            @activeTab = key
+            arr = key.split(':')
+            window.location.hash = "#/project/#{arr[1]}/#{arr[0]}/#{arr[2]}"
+            return this
+
+      markActive: (tabId)->
+        @tabs[@activeTab].removeClass('active') if @activeTab?
+        @activeTab = tabId
+        @tabs[@activeTab].addClass('active')
+        this
 
       switchToTab: (tabId)->
-        $('.tab-body').hide()
-        if tabId.split(':')[0] == 'file'
-          @parentView.editors[tabId].body.show()
+        @getTabConfig(@activeTab).body.hide() if @activeTab?
+        @markActive tabId
+        @getTabConfig(tabId).body.show()
+        this

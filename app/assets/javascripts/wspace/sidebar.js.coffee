@@ -21,7 +21,7 @@ define [
 
       initialize: ->
         @views = {}
-        psi.subscribe 'nav:app-root', =>
+        psi.subscribe 'post:nav:app-root', =>
           require ["wspace/project_list"], (V)=>
             unless @views['project_list']?
               v = @views['project_list'] = new V
@@ -30,13 +30,13 @@ define [
             @switchToView 'project_list'
             @currentView.loadProjects()
 
-        psi.subscribe 'nav:project-root', this, @openProjectTree
-        psi.subscribe 'nav:file', this, @openProjectTree
+        psi.subscribe 'post:nav:project-root', this, @openProjectTree
+        psi.subscribe 'post:nav:file', this, @openProjectTree
 
 
       collapse: ->
         @hide 'fast', -> 
-          psi.publish 'ui:sidebar-collapsed'
+          psi.publish 'post:ui:sidebar:collapse'
         this
 
       setTitle: (title)-> 

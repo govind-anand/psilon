@@ -15,11 +15,11 @@ define [
           success: (data)->
             if data.success
               psi.ui.notifier.success "Project creation successful"
-              psi.publish 'stask:project-creation:successful'
+              psi.publish 'post:project:create'
               window.location.hash = '#/'
             else
               psi.ui.notifier.error "Creation failed"
-              psi.publish 'stask:project-creation:failed'
+              psi.publish 'post:fail:project:create'
           error: ->
             psi.ui.notifier.error "Project creation failed"
         return false
