@@ -31,7 +31,7 @@ define [
 
       addEditorTab: (tabId, params)->
         self = this
-        path = params.parent + '/' + params.name
+        path = (params.parent + '/' + params.name).replace(/\//g, '*')
         pid = params.pid
         realpath = path.replace(/\*/g, '/')
         @tabs[tabId] = tab = $$ ->
