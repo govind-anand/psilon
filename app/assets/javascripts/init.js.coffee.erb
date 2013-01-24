@@ -15,6 +15,17 @@ require.config
       deps: ['jquery']
     'jstree/jquery.jstree':
       deps: ['jquery']
+    'taffy':
+      exports: 'TAFFY'
+    'underscore':
+      exports: '_'
+    'path':
+      exports: 'Path'
 
-require ['psi', 'sugar'], -> 
-  $ -> psi.init(true)
+<% if Rails.env.production? %>
+require ['psi', 'utils/dummy_logger'], (PSI, Logger)->
+<% else %>
+require ['psi', 'utils/logger'], (PSI, Logger)->
+<% end %>
+  window.psi = new PSI logger: new Logger
+  $ -> psi.init()

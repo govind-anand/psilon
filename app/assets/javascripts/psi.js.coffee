@@ -1,17 +1,43 @@
+# Global mediator : Provides a single point of access to the models, collections
+# top level views and major utilities
+
 define [
+
+    # Third party libraries:
     'jquery'
-    'amplify'
     'path'
-    'wspace/workspace'
-    'wspace/notifier'
-    'wspace/routes'
-  ], ->
+    'underscore'
 
-    Workspace = require('wspace/workspace')
-    Notifier = require('wspace/notifier')
-    routes = require('wspace/routes')
+    # Collections:
+    'collections/files'
+    'collections/projects'
 
-    window.psi = 
+    # Views:
+    'views/workspace'
+    'views/notifier'
+
+    # Configurations:
+    'config/routes'
+
+    # Utilities:
+    'utils/pubsub'
+    'utils/frags'
+
+  ], (
+    $, Path, _,           # Third party libraries
+    Files, Projects,      # Collections
+    Workspace, Notifier,  # Views
+    routes,               # configurations
+    pubsub, frags         # utilities
+  )->
+
+    class PSI
+
+      constructor: (options)->
+        @logger = options.logger
+        @frags = frags
+        _.extend this, pubsub
+
       _initRouter: ->
         self = this
         for route, action of routes
@@ -37,41 +63,17 @@ define [
           .init()
         @ui.notifier.init()
 
-      _initLogger: ->
-        efn = ->
-        @logger=
-          debug: efn
-          info: efn
-          warn: efn
-          error: efn
-          log: efn
+      _initRegistry: ->
+        @registry =
+          projects: new Projects
+          files: new Files
 
       init: (enableLogging)->
-        @_initLogger()
+        @_initRegistry()
         @_initAjax()
         @_initUI()
         @_initRouter()
-        if (enableLogging)
-          require ['wspace/logger'], (Logger)=> @logger = new Logger
-
-      publish: ->
-        @logger.info "PUBLISH: ", arguments if @ui?
-        amplify.publish.apply this, arguments
-
-      subscribe: ->
-        @logger.info "SUBSCRIBE: ", arguments if @ui?
-        amplify.subscribe.apply this, arguments
 
       loadCSS: (path)->
         unless (@_loadedCSS ?= {})[path]?
           $('head').append("<link rel='stylesheet' type='text/css' href='/assets/#{path}.css'>")
-
-      frags:
-        loader: "<div class='loader'></div>"
-        loadFail: "<div class='load-fail'>Loading Failed!</div>"
-
-      _nextId: 1
-      uniqueId: ->
-        id = @_nextId
-        @_nextId += 1
-        return id

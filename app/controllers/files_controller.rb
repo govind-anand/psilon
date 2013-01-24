@@ -29,7 +29,7 @@ class FilesController < ApplicationController
     if ext_mode_map.has_key? ext
       ext_mode_map[ext]
     else
-      'text'
+      ['text']
     end
   end
 
@@ -40,6 +40,7 @@ class FilesController < ApplicationController
     end
     file = @project.find_file params[:path]
     render :json => {
+      :pid => @project.id,
       :name => file.name,
       :parent => file.parent,
       :content => file.get_content,
@@ -52,7 +53,7 @@ class FilesController < ApplicationController
     respond_to do |format|
       format.json do
         json_success({
-          :id => @project.id,
+          :pid => @project.id,
           :name => @project.name,
           :root => root,
           :files => @project.files(root)

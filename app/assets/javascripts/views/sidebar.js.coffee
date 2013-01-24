@@ -21,18 +21,9 @@ define [
 
       initialize: ->
         @views = {}
-        psi.subscribe 'post:nav:app-root', =>
-          require ["wspace/project_list"], (V)=>
-            unless @views['project_list']?
-              v = @views['project_list'] = new V
-              v.appendTo @body
-              v.parentView = this
-            @switchToView 'project_list'
-            @currentView.loadProjects()
-
+        psi.subscribe 'post:nav:app-root', this, @openProjectList
         psi.subscribe 'post:nav:project-root', this, @openProjectTree
         psi.subscribe 'post:nav:file', this, @openProjectTree
-
 
       collapse: ->
         @hide 'fast', -> 
@@ -44,7 +35,7 @@ define [
         this
 
       openProjectTree: (data)->
-        require ["wspace/project_tree"], (V)=>
+        require ["views/project_tree"], (V)=>
           viewName = "project_tree:#{data.pid}"
           unless @views[viewName]?
             v = @views[viewName] = new V(data.pid)
@@ -58,3 +49,12 @@ define [
           @currentView = @views[view].show?()
           @title.html @currentView.title
         this
+
+      openProjectList: ->
+        require ["views/project_list"], (V)=>
+          unless @views['project_list']?
+            v = @views['project_list'] = new V
+            v.appendTo @body
+            v.parentView = this
+          @switchToView 'project_list'
+          psi.registry.projects.load()

@@ -29,8 +29,10 @@ define [
         @on 'click', '.tab .tab-close', ->
           psi.publish 'pre:file:close', $(this).parent('.tab').data('tabId')
 
-      addEditorTab: (tabId, path, pid)->
+      addEditorTab: (tabId, params)->
         self = this
+        path = params.parent + '/' + params.name
+        pid = params.pid
         realpath = path.replace(/\*/g, '/')
         @tabs[tabId] = tab = $$ ->
           @div class: 'tab', =>
