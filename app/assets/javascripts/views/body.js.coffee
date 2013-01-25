@@ -8,6 +8,25 @@ define [
 
     class Body extends View
 
+      @content: ->
+        @div id:'workspace-container', =>
+          @subview 'tabbar', new Tabbar
+          @div id:'body-outer-wrapper', =>
+            @div id:'body-wrapper', outlet: 'bodyWrapper'
+
+      initialize: ->
+        @editors = {}
+        psi.subscribe 'pre:ui:sidebar:collapse', this, @collapseSidebar
+        psi.subscribe 'pre:file:close', this, @closeEditor
+        psi.subscribe 'post:file:fetch', this, @openEditor
+        psi.subscribe 'pre:editor:save', =>
+          eId = @tabbar.activeTab
+          if eId? and @editors[eId]?
+            psi.publish 'pre:file:save', 
+              file: @getFileInfo eId
+              content: @editors[eId].cm.getValue()
+        psi.subscribe 'pre:file:save_as', this, @saveFileAs
+
       collapseSidebar: ->
         @addClass 'rexpanded'
         psi.publish 'post:ui:sidebar:collapse'
@@ -38,6 +57,15 @@ define [
             }
         @tabbar.addEditorTab eId, params
 
+      getFileInfo: (eId)->
+        arr = eId.split(':')
+        return null if arr[0] != 'file'
+        parr = arr[2].split('/')
+
+        pid: Number arr[1]
+        parent: parr.slice(0, -1).join('/')
+        name: parr.slice(-1)[0]
+
       openEditor: (params)->
         eId = "file:#{params.pid}:#{params.parent}/#{params.name}"
         unless @editors[eId]?
@@ -52,15 +80,3 @@ define [
         @tabbar.removeTab(eId)
         arr = eId.split(':')
         psi.publish 'post:file:close', pid: arr[1], path: arr[2]
-
-      initialize: ->
-        @editors = {}
-        psi.subscribe 'pre:ui:sidebar:collapse', this, @collapseSidebar
-        psi.subscribe 'pre:file:close', this, @closeEditor
-        psi.subscribe 'post:file:fetch', this, @openEditor
-
-      @content: ->
-        @div id:'workspace-container', =>
-          @subview 'tabbar', new Tabbar
-          @div id:'body-outer-wrapper', =>
-            @div id:'body-wrapper', outlet: 'bodyWrapper'

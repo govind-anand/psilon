@@ -8,6 +8,20 @@ define ['taffy'], (TAFFY)->
     constructor: ->
       @db = TAFFY()
       psi.subscribe 'post:nav:file', this, @fetch
+      psi.subscribe 'pre:file:save', this, @save
+
+    save: (params)->
+      dset = @db(params.file)
+      dset.update(content: params.content)
+      data = dset.get()[0]
+      $.ajax
+        url: "/projects/#{params.file.pid}/file"
+        data: 
+          path: data.parent+'/'+data.name
+          content: params.content
+        type: 'PUT'
+        success: ->
+          psi.ui.notifier.success "File saved"
 
     fetch: (options)->
       $.ajax
