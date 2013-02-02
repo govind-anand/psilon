@@ -13,12 +13,14 @@ define ->
     getPath: -> "#{@parent}/#{@name}"
 
     getHashURL: -> "#/project/#{@pid}/file/#{@getEncPath()}"
+    getNodeID: -> ""
 
     constructor: (params)->
       if _.isString params
         @setPath(params)
       else
         @pid = Number(params.pid) if params.pid?
+        @type = params.type       if params.type?
         @name = params.name       if params.name?
         @parent = params.parent   if params.parent?
         @setPath(params.path)     if params.path?

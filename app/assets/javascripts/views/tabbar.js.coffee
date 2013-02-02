@@ -36,11 +36,14 @@ define [
       updateTabPath: (oldTabId, newTabId, file)->
         @tabs[newTabId] = @tabs[oldTabId]
         delete @tabs[oldTabId]
+        hurl = file.getHashURL()
         @tabs[newTabId]
           .find('.tab-label')
-          .attr( href: file.getHashURL())
+          .attr( href: hurl)
           .html(file.getPath())
-        if @activeTab == oldTabId then @activeTab = newTabId
+        if @activeTab == oldTabId 
+          @activeTab = newTabId
+          window.location.hash = hurl
 
       addEditorTab: (tabId, file)->
         @tabs[tabId] = tab = $$ ->

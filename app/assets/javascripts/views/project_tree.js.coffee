@@ -1,17 +1,43 @@
 define [
     'space-pen'
+    'underscore'
     'models/file'
     'jstree/jquery.jstree'
   ],(
     View,
+    _,
     File
   )->
 
     class ProjectTree extends View
-      initialize: (@pid)->
       @content: ->
         @div id:'project-tree', =>
           @div id:'ptree-container', outlet: 'treeContainer'
+
+      initialize: (@pid)->
+        @nodeMap = {}
+        psi.subscribe 'post:file:move', this, (params)->
+          file = params.file
+          oldPath = params.oldPath
+          path = file.getPath()
+          li = @findNode oldPath
+          @nodeMap[path] = @nodeMap[oldPath]
+          delete @nodeMap[oldPath]
+          if li?
+            psi.logger.debug 'Found moved node :', li
+            li.data path: path
+            a = li.find('a')
+            a.attr href: params.file.getHashURL()
+          else
+            psi.logger.debug 'Moved node not found in tree :', params
+
+      findNode: (path)->
+        return null unless @nodeMap[path]?
+        @treeContainer.find("##{@nodeMap[path]}").parent('li')
+
+      # Characters allowed in ids include characters, numbers, colon, hiphen
+      # period, underscore
+      encPath: (path)-> path.replace(/\//g, '*')
 
       loadTree: ->
         self = this
@@ -53,20 +79,24 @@ define [
               success: (data)->
                 children = []
                 for item in data.files
+                  f = new File _.extend item, pid: pid
+                  fid = _.uniqueId 'tnode_'
                   child =
                     metadata:
-                      path: item.path
-                      type: item.type
+                      path: f.getPath()
+                      type: f.type
                     data:
-                      title: item.path.split('/').slice(-1)[0]
+                      title: f.name
                       attr:
-                        href: "#/project/#{pid}/#{item.type}/#{item.path.replace(/\//g, '*')}"
+                        href: f.getHashURL()
+                        id: fid
                   if item.type == 'file' 
                     child.data.icon = '/assets/icons/page.png'
                   else
                     child.data.icon = '/assets/icons/folder.png'
                     child.state = 'closed'
                   children.push child
+                  self.nodeMap[f.getPath()] = fid
 
                 if data.root == '/'
                   self.parentView.setTitle "Project : #{data.name}"
