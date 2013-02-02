@@ -3,6 +3,7 @@ define [
     'underscore'
     'models/file'
     'jstree/jquery.jstree'
+    'context_menu/jquery.context_menu'
   ],(
     View,
     _,
@@ -42,6 +43,7 @@ define [
       loadTree: ->
         self = this
         pid = @pid
+        psi.loadCSS('context_menu/jquery.context_menu')
         @treeContainer.on 'move_node.jstree', (params)->
           rslt = arguments[1].rslt
           psi.publish 'pre:file:move'
@@ -53,6 +55,13 @@ define [
               new File 
                 pid: self.pid
                 path: rslt.np.data('path')
+        @treeContainer.contextMenu
+          selector: 'a'
+          callback: -> psi.logger.log('context menu : ', arguments)
+          items:
+            rename: {name: 'Rename'}
+            move: {name: 'Move'}
+            delete: {name: 'Delete'}
         @treeContainer.jstree
           themes:
             theme: 'psilon'
@@ -64,12 +73,6 @@ define [
                 if params.np.data('type') == 'directory'
                   true
                 else false
-          contextmenu:
-            items:
-              doSomething:
-                label: 'Do something'
-                icon: false
-                action: ->
           json_data:
             ajax:
               url: "/projects/#{pid}/files.json"
@@ -104,7 +107,7 @@ define [
                   children: children
                 else
                   children
-          plugins: ["themes","json_data","contextmenu","crrm","dnd"]
+          plugins: ["themes","json_data","crrm","dnd"]
         $.vakata.context.cnt.appendTo($("body")).html(" ")
 
       show: ->
