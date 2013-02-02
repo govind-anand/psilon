@@ -52,16 +52,26 @@ define [
                 pid: self.pid
                 path: rslt.o.data('path')
             dest:
-              new File 
+              new File
                 pid: self.pid
                 path: rslt.np.data('path')
+
         @treeContainer.contextMenu
           selector: 'a'
-          callback: -> psi.logger.log('context menu : ', arguments)
+          callback: (action)->
+            p = @parent()
+            path = p.data 'path'
+            type = p.data 'type'
+            psi.publish "pre:#{type}:#{action}", new File
+              pid: self.pid
+              path: path
+              type: type
           items:
             rename: {name: 'Rename'}
-            move: {name: 'Move'}
+            share: {name: 'Move'}
             delete: {name: 'Delete'}
+            download: {name: 'Download'}
+            properties: {name: 'Properties'}
         @treeContainer.jstree
           themes:
             theme: 'psilon'
