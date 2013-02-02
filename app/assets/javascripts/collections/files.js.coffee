@@ -12,6 +12,7 @@ define ['taffy','models/file','views/widgets/icon'], (TAFFY, File, icon)->
         dset.remove()
 
     move: (params)->
+      self= this
       src = params.src
       dest = params.dest
       psi.logger.info 'Moving file...'
@@ -22,10 +23,11 @@ define ['taffy','models/file','views/widgets/icon'], (TAFFY, File, icon)->
           path: src.getPath()
           parent: dest.getPath()
         success: ->
+          self.db(src.getDBParams()).update(parent: dest.getPath())
           psi.ui.notifier.success "File moved"
           oldPath = src.getPath()
           src.parent = dest.getPath()
-          psi.publish 'post:file:move', src
+          psi.publish 'post:file:move', file: src, oldPath: oldPath
 
     save: (params)->
       dset = @db(params.file)

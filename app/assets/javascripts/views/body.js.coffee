@@ -21,6 +21,7 @@ define [
         psi.subscribe 'pre:ui:sidebar:collapse', this, @collapseSidebar
         psi.subscribe 'pre:file:close', this, @closeEditor
         psi.subscribe 'post:file:fetch', this, @openEditor
+        psi.subscribe 'post:file:move', this, @updateFilePath
         psi.subscribe 'pre:editor:save', =>
           eId = @tabbar.activeTab
           if eId? and @editors[eId]?
@@ -28,6 +29,16 @@ define [
               file: @getFileInfo eId
               content: @editors[eId].cm.getValue()
         psi.subscribe 'pre:file:save_as', this, @saveFileAs
+
+      updateFilePath: (params)->
+        file = params.file
+        oldPath = params.oldPath
+        oldEId = "file:#{file.pid}:#{oldPath}"
+        eId = @getEditorId(file)
+        if @editors[oldEId]?
+          @editors[eId] = @editors[oldEId]
+          delete @editors[oldEId]
+          @tabbar.updateTabPath oldEId,eId, file
 
       collapseSidebar: ->
         @addClass 'rexpanded'

@@ -33,6 +33,15 @@ define [
         @on 'click', '.tab .tab-close', ->
           psi.publish 'pre:file:close', $(this).parent('.tab').data('tabId')
 
+      updateTabPath: (oldTabId, newTabId, file)->
+        @tabs[newTabId] = @tabs[oldTabId]
+        delete @tabs[oldTabId]
+        @tabs[newTabId]
+          .find('.tab-label')
+          .attr( href: file.getHashURL())
+          .html(file.getPath())
+        if @activeTab == oldTabId then @activeTab = newTabId
+
       addEditorTab: (tabId, file)->
         @tabs[tabId] = tab = $$ ->
           _.extend this, icon

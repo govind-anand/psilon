@@ -22,3 +22,5 @@ define ->
         @name = params.name       if params.name?
         @parent = params.parent   if params.parent?
         @setPath(params.path)     if params.path?
+
+    getDBParams: -> name: @name, parent: @parent, pid: @pid
