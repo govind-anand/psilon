@@ -68,7 +68,7 @@ define [
           projects: new Projects
           files: new Files
 
-      init: (enableLogging)->
+      init: ->
         @_initRegistry()
         @_initAjax()
         @_initUI()

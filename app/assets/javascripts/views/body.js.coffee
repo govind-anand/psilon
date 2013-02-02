@@ -1,9 +1,11 @@
 define [
     'space-pen'
     './tabbar'
+    'models/file'
   ],(
     View,
-    Tabbar
+    Tabbar,
+    File
   )->
 
     class Body extends View
@@ -31,7 +33,7 @@ define [
         @addClass 'rexpanded'
         psi.publish 'post:ui:sidebar:collapse'
 
-      createEditor: (eId, params)->
+      createEditor: (eId, file)->
         psi.loadCSS 'codemirror/lib/codemirror'
         body = $$ -> @div class:'editor tab-body'
         body
@@ -39,9 +41,9 @@ define [
           .html(psi.frags.loader)
         @editors[eId] = body: body
         fdata = psi.registry.files.db(
-            pid: params.pid
-            parent: params.parent
-            name: params.name
+            pid: file.pid
+            parent: file.parent
+            name: file.name
           ).get()[0]
         modes = []
         for mode in fdata.modes
@@ -55,7 +57,7 @@ define [
               lineNumbers: true
               mode: fdata.modes[fdata.modes.length-1]
             }
-        @tabbar.addEditorTab eId, params
+        @tabbar.addEditorTab eId, file
 
       getFileInfo: (eId)->
         arr = eId.split(':')
@@ -66,17 +68,20 @@ define [
         parent: parr.slice(0, -1).join('/')
         name: parr.slice(-1)[0]
 
-      openEditor: (params)->
-        eId = "file:#{params.pid}:#{params.parent}/#{params.name}"
+      getEditorId: (file)-> 
+        "file:#{file.pid}:#{file.getPath()}"
+
+      openEditor: (file)->
+        eId = @getEditorId file
         unless @editors[eId]?
-          @createEditor(eId, params)
+          @createEditor(eId, file)
         @tabbar.switchToTab(eId)
         @find('.tab-body').hide()
-        @editors[eId].body
-          .show()
+        @editors[eId].body.show()
 
       closeEditor: (eId)->
         @editors[eId].body.remove()
+        delete @editors[eId]
         @tabbar.removeTab(eId)
         arr = eId.split(':')
-        psi.publish 'post:file:close', pid: arr[1], path: arr[2]
+        psi.publish 'post:file:close', new File pid: arr[1], path: arr[2]

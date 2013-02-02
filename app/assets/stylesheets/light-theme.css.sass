@@ -66,3 +66,10 @@ body.light-theme
     ul li:hover a
       font-weight: 800
       color: $blue-base
+  #tab-list
+    .tab.active
+      +background-image(linear-gradient(bottom, white 0%, $light-base 100%))
+      border-left: 1px solid gray
+      border-right: 1px solid gray
+      .tab-label
+        color: $blue-base
