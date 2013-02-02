@@ -5,10 +5,27 @@ define ['taffy','models/file','views/widgets/icon'], (TAFFY, File, icon)->
       @db = TAFFY()
       psi.subscribe 'post:nav:file', this, @fetch
       psi.subscribe 'pre:file:save', this, @save
+      psi.subscribe 'pre:file:move', this, @move
       psi.subscribe 'post:file:close', this, (file)->
         dset = @db pid: file.pid, parent: file.parent, name: file.name
         psi.logger.log('dset : ', dset.get())
         dset.remove()
+
+    move: (params)->
+      src = params.src
+      dest = params.dest
+      psi.logger.info 'Moving file...'
+      $.ajax
+        url: "/projects/#{src.pid}/file"
+        type: 'PUT'
+        data:
+          path: src.getPath()
+          parent: dest.getPath()
+        success: ->
+          psi.ui.notifier.success "File moved"
+          oldPath = src.getPath()
+          src.parent = dest.getPath()
+          psi.publish 'post:file:move', src
 
     save: (params)->
       dset = @db(params.file)

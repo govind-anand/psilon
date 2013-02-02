@@ -1,3 +1,5 @@
+require 'fileutils'
+
 class FileProxy
 
   include Authority::Abilities
@@ -37,6 +39,17 @@ class FileProxy
     @path.split('/')[0...-1].join('/')
   end
 
+  def set_parent(path)
+    begin
+      FileUtils.mv abs_path, File.join(@project.root, path)
+      @path = path
+    rescue Errno::EACCES
+      @errors = {:permission => "denied"}
+      return false
+    end
+    true
+  end
+
   def get_content
     if @exists
       begin
@@ -45,7 +58,7 @@ class FileProxy
           return f.read
         end
       rescue Errno::EACCES
-        @rrors = {:permission => "denied"}
+        @errors = {:permission => "denied"}
         return false
       rescue Exception
         return false

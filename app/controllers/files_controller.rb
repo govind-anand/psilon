@@ -63,13 +63,18 @@ class FilesController < ApplicationController
   end
 
   def update
-    file = @project.find_file(params[:path])
+    file = @project.find_file params[:path]
     unless file.exists
-      json_error :file => "Not found"
+      return json_error :file => "Not found"
     end
     if params.has_key? :content
-      unless file.set_content(params[:content])
-        json_error :file => "could not be saved"
+      unless file.set_content params[:content]
+        return json_error :file => "could not be saved"
+      end
+    end
+    if params.has_key? :parent
+      unless file.set_parent params[:parent]
+        json_error :file => "could not be moved"
       end
     end
     json_success
