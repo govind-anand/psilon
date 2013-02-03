@@ -22,6 +22,7 @@ define [
         psi.subscribe 'pre:file:close', this, @closeEditor
         psi.subscribe 'post:file:fetch', this, @openEditor
         psi.subscribe 'post:file:move', this, @updateFilePath
+        psi.subscribe 'post:file:rename', this, @updateFilePath
         psi.subscribe 'pre:editor:save', =>
           eId = @tabbar.activeTab
           if eId? and @editors[eId]?
@@ -32,7 +33,7 @@ define [
 
       updateFilePath: (params)->
         file = params.file
-        oldPath = params.oldPath
+        oldPath = params.oldPath or "#{file.parent}/#{params.oldName}"
         oldEId = "file:#{file.pid}:#{oldPath}"
         eId = @getEditorId(file)
         if @editors[oldEId]?

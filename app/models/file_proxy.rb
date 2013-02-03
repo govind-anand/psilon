@@ -35,6 +35,15 @@ class FileProxy
     @path.split('/')[-1]
   end
 
+  def set_name name
+    begin
+      FileUtils.mv abs_path, File.join(@project.root, parent, name)
+    rescue Errno::EACCESS
+      @errors = {:permission => "denied"}
+      return false
+    end
+  end
+
   def parent
     @path.split('/')[0...-1].join('/')
   end

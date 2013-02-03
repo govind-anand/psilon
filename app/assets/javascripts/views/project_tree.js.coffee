@@ -17,20 +17,26 @@ define [
 
       initialize: (@pid)->
         @nodeMap = {}
-        psi.subscribe 'post:file:move', this, (params)->
-          file = params.file
-          oldPath = params.oldPath
-          path = file.getPath()
-          li = @findNode oldPath
-          @nodeMap[path] = @nodeMap[oldPath]
-          delete @nodeMap[oldPath]
-          if li?
-            psi.logger.debug 'Found moved node :', li
-            li.data path: path
-            a = li.find('a')
-            a.attr href: params.file.getHashURL()
-          else
-            psi.logger.debug 'Moved node not found in tree :', params
+        psi.subscribe 'post:file:move', this, @readjustFilePaths
+        psi.subscribe 'post:file:rename', this, @readjustFilePaths
+        psi.subscribe 'post:directory:move', this, @readjustFilePaths
+        psi.subscribe 'post:directory:rename', this, @readjustFilePaths
+
+      readjustFilePaths: (params)->
+        file = params.file
+        oldPath = params.oldPath or "#{file.parent}/#{params.oldName}"
+        path = file.getPath()
+        li = @findNode oldPath
+        @nodeMap[path] = @nodeMap[oldPath]
+        delete @nodeMap[oldPath]
+        if li?
+          psi.logger.debug 'Found moved node :', li
+          li.data path: path
+          a = li.children('a').attr(href: file.getHashURL())
+          ins = a.children('ins')
+          a.html(file.name).prepend(ins)
+        else
+          psi.logger.debug 'Moved node not found in tree :', params
 
       findNode: (path)->
         return null unless @nodeMap[path]?
@@ -44,6 +50,7 @@ define [
         self = this
         pid = @pid
         psi.loadCSS('context_menu/jquery.context_menu')
+
         @treeContainer.on 'move_node.jstree', (params)->
           rslt = arguments[1].rslt
           psi.publish 'pre:file:move'
@@ -62,16 +69,24 @@ define [
             p = @parent()
             path = p.data 'path'
             type = p.data 'type'
-            psi.publish "pre:#{type}:#{action}", file: new File
+            pdata = file: new File
               pid: self.pid
               path: path
               type: type
+
+            switch action
+              when 'rename'
+                pdata.newName = prompt("Please enter new name for : #{path}", @text())
+                return unless pdata.newName? and pdata.newName != pdata.file.name
+
+            psi.publish "pre:#{type}:#{action}", pdata
           items:
             rename: {name: 'Rename'}
             share: {name: 'Move'}
             delete: {name: 'Delete'}
             download: {name: 'Download'}
             properties: {name: 'Properties'}
+
         @treeContainer.jstree
           themes:
             theme: 'psilon'

@@ -40,6 +40,11 @@ class FilesController < ApplicationController
         return json_error :file => "could not be moved"
       end
     end
+    if params.has_key? :name
+      unless @file.set_name params[:name]
+        return json_error :file => "Could not be renamed"
+      end
+    end
     json_success
   end
 
