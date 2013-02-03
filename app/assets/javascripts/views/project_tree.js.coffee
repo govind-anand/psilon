@@ -128,12 +128,15 @@ define [
 
                 if data.root == '/'
                   self.parentView.setTitle "Project : #{data.name}"
-                  data: data.name
+                  metadata:
+                    type: 'directory'
+                    path: '/'
+                  data: 
+                    title: data.name
                   children: children
                 else
                   children
           plugins: ["themes","json_data","crrm","dnd"]
-        $.vakata.context.cnt.appendTo($("body")).html(" ")
 
       show: ->
         @loadTree() unless @treeLoaded
