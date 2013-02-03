@@ -15,7 +15,7 @@ define [
 
       @content: ->
         @div id:'tabbar', class: 'tbar', =>
-          @a id:'tab-all', class: 'icon', => @icon 'list'
+          @a id:'tab-all', class: 'icon disabled', outlet: 'tdropdown', => @icon 'list'
           @a id:'tabbar-scroll-left', class: 'icon', => @icon 'chevron-left'
           @ul id:'tab-list', outlet: 'tabList'
           @a id:'tabbar-scroll-right', class: 'icon', => @icon 'chevron-right'
@@ -45,6 +45,23 @@ define [
           @activeTab = newTabId
           window.location.hash = hurl
 
+      buildDropdown: ->
+        #[TODO] Modify the context menu plugin to avoid rebuilding the dropdown
+        $.contextMenu 'destroy', '#tab-all'
+        items = {}
+        for item, tab of @tabs
+          url = tab.find('.tab-label').attr('href')
+          items[url]= name: url
+        console.log "items:", items
+        #[TODO] configure the appearance of context menu
+        $.contextMenu
+          selector: '#tab-all'
+          trigger: 'left'
+          items: items
+          callback: (url)->
+            window.location.hash = url
+          zIndex: 9999
+
       addEditorTab: (tabId, file)->
         @tabs[tabId] = tab = $$ ->
           _.extend this, icon
@@ -56,6 +73,7 @@ define [
               file.getPath()
         tab.data 'tabId', tabId
         @tabList.append tab
+        @buildDropdown()
         this
 
       removeTab: (tabId)->
@@ -72,6 +90,7 @@ define [
           arr = tabId.split ':'
           window.location.hash = "#/project/#{arr[1]}"
           psi.publish 'post:file:close-all'
+        @buildDropdown()
 
       markActive: (tabId)->
         @tabs[@activeTab].removeClass('active') if @activeTab?
