@@ -6,10 +6,23 @@ define ['taffy','models/file','views/widgets/icon'], (TAFFY, File, icon)->
       psi.subscribe 'post:nav:file', this, @fetch
       psi.subscribe 'pre:file:save', this, @save
       psi.subscribe 'pre:file:move', this, @move
+      psi.subscribe 'pre:file:delete', this, @delete
       psi.subscribe 'post:file:close', this, (file)->
         dset = @db pid: file.pid, parent: file.parent, name: file.name
         psi.logger.log('dset : ', dset.get())
         dset.remove()
+
+    delete: (params)->
+      file = params.file
+      $.ajax
+        url: "/projects/#{file.pid}/file"
+        type: 'DELETE'
+        data:
+          path: file.getPath()
+        success: =>
+          @db(file.getDBParams()).remove()
+          psi.ui.notifier.success "File deleted"
+          psi.publish 'post:file:delete'
 
     move: (params)->
       self= this
@@ -36,11 +49,12 @@ define ['taffy','models/file','views/widgets/icon'], (TAFFY, File, icon)->
       $.ajax
         url: "/projects/#{params.file.pid}/file"
         data: 
-          path: data.parent+'/'+data.name
+          path: data.getPath()
           content: params.content
         type: 'PUT'
         success: ->
           psi.ui.notifier.success "File saved"
+          psi.publish 'post:file:save', file: data
 
     fetch: (options)->
       $.ajax
@@ -53,7 +67,4 @@ define ['taffy','models/file','views/widgets/icon'], (TAFFY, File, icon)->
             dset.update(data)
           else
             @db.insert(data)
-          psi.publish 'post:file:fetch', new File(data)
-
-    get: (options)->
-      dset = @db
+          psi.publish 'post:file:fetch', file: new File(data)

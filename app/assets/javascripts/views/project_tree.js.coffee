@@ -62,7 +62,7 @@ define [
             p = @parent()
             path = p.data 'path'
             type = p.data 'type'
-            psi.publish "pre:#{type}:#{action}", new File
+            psi.publish "pre:#{type}:#{action}", file: new File
               pid: self.pid
               path: path
               type: type

@@ -1,50 +1,15 @@
 class FilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter :load_project
-
-  def get_mode(name)
-    # [TODO] Store it in a database
-    ext_mode_map = {
-      'cpp'    => ['clike'],
-      'c'      => ['clike'],
-      'c++'    => ['clike'],
-      'coffee' => ['coffeescript'],
-      'css'    => ['css'],
-      'diff'   => ['diff'],
-      'haxe'   => ['haxe'],
-      'js'     => ['javascript'],
-      'less'   => ['less'],
-      'lua'    => ['lua'],
-      'md'     => ['markdown'],
-      'sql'    => ['mysql'],
-      'php'    => ['php'],
-      'py'     => ['python'],
-      'rb'     => ['ruby'],
-      'rst'    => ['rst'],
-      'sh'     => ['shell'],
-      'yaml'   => ['yaml'],
-      'html'   => ['css','javascript','xml','htmlmixed']
-    }
-    ext = name.split('.')[-1]
-    if ext_mode_map.has_key? ext
-      ext_mode_map[ext]
-    else
-      ['text']
-    end
-  end
+  before_filter :load_file, :only => [:show, :update, :destroy]
 
   def show
-    unless params.has_key? :path
-      json_error "Path not specified"
-      return false
-    end
-    file = @project.find_file params[:path]
     render :json => {
-      :pid => @project.id,
-      :name => file.name,
-      :parent => file.parent,
-      :content => file.get_content,
-      :modes => self.get_mode(file.name)
+      :pid      => @project.id,
+      :name     => @file.name,
+      :parent   => @file.parent,
+      :content  => @file.get_content,
+      :modes    => @file.get_mode
     }
   end
 
@@ -53,31 +18,38 @@ class FilesController < ApplicationController
     respond_to do |format|
       format.json do
         json_success({
-          :pid => @project.id,
-          :name => @project.name,
-          :root => root,
-          :files => @project.files(root)
+          :pid    => @project.id,
+          :name   => @project.name,
+          :root   => root,
+          :files  => @project.files(root)
         })
       end
     end
   end
 
   def update
-    file = @project.find_file params[:path]
-    unless file.exists
-      return json_error :file => "Not found"
-    end
     if params.has_key? :content
-      unless file.set_content params[:content]
+      unless @file.set_content params[:content]
+        #[TODO] Log and notify error to admin
         return json_error :file => "could not be saved"
       end
     end
     if params.has_key? :parent
-      unless file.set_parent params[:parent]
-        json_error :file => "could not be moved"
+      unless @file.set_parent params[:parent]
+        #[TODO] Log and notify error to admin
+        return json_error :file => "could not be moved"
       end
     end
     json_success
+  end
+
+  def destroy
+    if @file.delete
+      json_success
+    else
+      #[TODO] Log and notify error to admin
+      json_error :file => "could not be deleted"
+    end
   end
 
   private
@@ -86,14 +58,24 @@ class FilesController < ApplicationController
     if params.has_key? :project_id
       @project = Project.find params[:project_id]
       if @project.nil?
-        json_error "Project not found"
+        json_error :project => "Not found"
         return false
       end
     else
-      json_error "Project not specified"
+      json_error :project => "Not specified"
       return false
     end
   end
 
-  true
+  def load_file
+    if params.has_key? :path
+      @file = @project.find_file params[:path]
+      unless @file.exists
+        return json_error :file => "Not found"
+      end
+    else 
+      json_error :file => "Not specified"
+      return false
+    end
+  end
 end

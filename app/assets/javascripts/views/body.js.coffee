@@ -82,7 +82,8 @@ define [
       getEditorId: (file)-> 
         "file:#{file.pid}:#{file.getPath()}"
 
-      openEditor: (file)->
+      openEditor: (params)->
+        file = params.file
         eId = @getEditorId file
         unless @editors[eId]?
           @createEditor(eId, file)

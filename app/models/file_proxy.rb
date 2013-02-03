@@ -50,6 +50,18 @@ class FileProxy
     true
   end
 
+  def delete
+    begin
+      if @stat.directory?
+        FileUtils.rm_rf abs_path
+      else
+        File.delete abs_path
+      end
+    rescue Errno::EACCES
+      @error = {:permission => "denied"}
+    end
+  end
+
   def get_content
     if @exists
       begin
@@ -82,6 +94,38 @@ class FileProxy
       return false
     rescue Exception
       return false
+    end
+  end
+
+  def get_mode()
+    # [TODO] Store it in a database
+    name = self.name
+    ext_mode_map = {
+      'cpp'    => ['clike'],
+      'c'      => ['clike'],
+      'c++'    => ['clike'],
+      'coffee' => ['coffeescript'],
+      'css'    => ['css'],
+      'diff'   => ['diff'],
+      'haxe'   => ['haxe'],
+      'js'     => ['javascript'],
+      'less'   => ['less'],
+      'lua'    => ['lua'],
+      'md'     => ['markdown'],
+      'sql'    => ['mysql'],
+      'php'    => ['php'],
+      'py'     => ['python'],
+      'rb'     => ['ruby'],
+      'rst'    => ['rst'],
+      'sh'     => ['shell'],
+      'yaml'   => ['yaml'],
+      'html'   => ['css','javascript','xml','htmlmixed']
+    }
+    ext = name.split('.')[-1]
+    if ext_mode_map.has_key? ext
+      ext_mode_map[ext]
+    else
+      ['text']
     end
   end
 end
