@@ -4,6 +4,7 @@ define [
     'config/ico_map'
     'views/widgets/toolbar'
     'views/widgets/buttons'
+    'tooltipster/js/jquery.tooltipster'
   ],(
     View,
     _,
@@ -17,19 +18,49 @@ define [
 
       @content: ->
         @div id: 'project-list', =>
-          @toolbar pseudo: true, =>
-            @icoBtn icon: 'numbered-list', click: 'showProjects'
-            @icoBtn icon: 'squared-plus', click: 'createProject'
-            @icoBtn icon: 'upload'
-            @icoBtn icon: 'github', isSocial: true
-            @icoBtn icon: 'dropbox', isSocial: true
-            @icoBtn icon: 'download'
+          @toolbar pseudo: true, outlet: 'icoTbar', =>
+            @icoBtn 
+              icon: 'numbered-list'
+              title: 'Your projects'
+              click: 'showProjects'
+              outlet: 'pListIcoTab'
+            @icoBtn
+              icon: 'squared-plus'
+              title: 'New project'
+              click: 'createProject'
+              outlet: 'pCreatorIcoTab'
+            @icoBtn
+              icon: 'upload'
+              title: 'Upload new project'
+              click: 'uploadProject'
+              outlet: 'pUploaderIcoTab'
+            @icoBtn 
+              icon: 'github'
+              title: 'Import from github'
+              isSocial: true
+              outlet: 'pGithubIcoTab'
+            @icoBtn
+              icon: 'dropbox'
+              title: 'Import from Dropbox'
+              isSocial: true
+              outlet: 'pDropboxIcoTab'
+            @icoBtn
+              icon: 'download'
+              title: 'Download'
+              outlet: 'pDownloadIcoTab'
           @div class: 'body', outlet: 'body'
 
       initialize: ->
         @title = "Projects"
         psi.subscribe "post:projects:update", =>
           @showProjects()
+
+      afterAttach: ->
+        psi.loadCSS 'tooltipster/css/tooltipster'
+        psi.loadCSS 'tooltipster/css/themes/tooltipster-shadow'
+        @icoTbar.find('a').tooltipster 
+          theme: '.tooltipster-shadow'
+          position: 'bottom'
 
       _renderList: (list)->
         $$ -> @ul => 
@@ -43,9 +74,16 @@ define [
       mask: ->
         @body.html psi.frags.loader
 
+      setSelected: (icoTab)->
+        @icoTbar
+          .find('a')
+          .removeClass('selected')
+        icoTab.addClass 'selected'
+
       showProjects: ->
         @body.html ''
         projects = psi.registry.projects.getAll()
+        @setSelected @pListIcoTab
         if projects.length > 0
           @body.html @_renderList(projects)
         else
@@ -53,5 +91,12 @@ define [
 
       createProject: ->
         @mask()
+        @setSelected @pCreatorIcoTab
         require ['views/project_creator'], (ProjectCreator)=>
           @body.html('').append(new ProjectCreator)
+
+      uploadProject: ->
+        @mask()
+        @setSelected @pUploaderIcoTab
+        require ['views/project_uploader'], (ProjectUploader)=>
+          @body.html('').append(new ProjectUploader)

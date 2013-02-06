@@ -12,7 +12,7 @@ define ['config/ico_map'], (icoMap)->
   icoBtn: ->
     options = if arguments.length > 0 and not _.isFunction(arguments[0])
       arguments[0]
-    else
+    #else
     cb = null
     transformOptions(options)
     if (options.icon)
