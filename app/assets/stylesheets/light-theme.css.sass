@@ -70,6 +70,12 @@ body.light-theme
     ul li:hover a
       font-weight: 800
       color: $blue-base
+    .plist
+      li.selected
+        +background-image(linear-gradient(top, antiquewhite 0%, white 100%)) 
+      li:hover
+        +background-image(linear-gradient(top, rgba(235, 247, 252, 0.5) 0%, white 100%)) 
+        border: 1px solid rgb(197,228,252)
   #tab-list
     .tab.active
       +background-image(linear-gradient(bottom, white 0%, $light-base 100%))

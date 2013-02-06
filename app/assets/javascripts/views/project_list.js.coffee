@@ -52,8 +52,46 @@ define [
 
       initialize: ->
         @title = "Projects"
+        @selected = []
+        self = this
+        @on 'click', '.pitem-wrapper', ->
+          el = $(this)
+          tel = el.find('.pitem')
+          pitem = tel.text()
+          if el.hasClass 'selected'
+            self.selected = _.without self.selected, pitem
+            el.removeClass 'selected'
+          else
+            self.selected.push pitem
+            el.addClass 'selected'
+          self.renderOpTbar()
         psi.subscribe "post:projects:update", =>
           @showProjects()
+
+      renderOpTbar: ->
+        if @selected.length == 0
+          @opTbar?.hide()
+          @body.css bottom: 0
+        else if @selected.length > 0 
+          unless @opTbar
+            @opTbar = $$ ->
+              _.extend this, toolbar, buttons
+              @toolbar class: 'op-toolbar', =>
+                @icoBtn
+                  icon: 'trash'
+                  title: 'Delete'
+                @icoBtn
+                  icon: 'download'
+                  title: 'Download'
+                @icoBtn
+                  icon: 'add-user'
+                  title: 'Share'
+                @icoBtn
+                  icon: 'pencil'
+                  title: 'Rename'
+            @body.css bottom: 25
+            @opTbar.appendTo this
+          @opTbar.show()
 
       afterAttach: ->
         psi.loadCSS 'tooltipster/css/tooltipster'
@@ -63,13 +101,14 @@ define [
           position: 'bottom'
 
       _renderList: (list)->
-        $$ -> @ul => 
+        $$ -> @ul class:'plist', => 
           for item in list
-            @li =>
-              @a href: "#/project/#{item.id}", =>
-                @div class: 'icon lfloat', =>
-                  @raw '&#10002;'
-                @text item.name
+            @li class: 'pitem-wrapper', =>
+              @div class: 'icon lfloat', =>
+                @raw '&#10002;'
+              @a class: 'icon rfloat project-opener', href: "#/project/#{item.id}", =>
+                @raw '&#59226;'
+              @a class: 'pitem', => @text item.name
 
       mask: ->
         @body.html psi.frags.loader
